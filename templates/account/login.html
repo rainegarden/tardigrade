@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h2>Login</h2>
+    <p style="color: red; display: {{ failed }};">Error: Username or Password is Incorrect</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Login</button>
+    </form>
+
+{% endblock %}
