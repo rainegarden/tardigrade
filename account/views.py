@@ -1,6 +1,6 @@
 from django.http import HttpResponse
-from django.contrib.auth import authenticate
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
 
 from .forms import LoginForm
 from .models import pfp
@@ -12,9 +12,9 @@ def render_pfp(request):
     """
     if request.user.is_authenticated:
         user = request.user
-        pfp  = pfp.objects.filter(user=user)
-        if pfp.exists():
-            pfp = pfp.first()
+        my_pfp  = pfp.objects.filter(user=user)
+        if my_pfp.exists():
+            my_pfp = my_pfp.first()
             return HttpResponse(pfp.image_binary, content_type='application/octet-stream')
         else:
             # If no profile picture exists, return a default image or None
@@ -24,6 +24,11 @@ def render_pfp(request):
 
 
 def login_view(request):
+    """
+    Just a basic login view
+    :param request:
+    :return:
+    """
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -31,8 +36,11 @@ def login_view(request):
             password = form.cleaned_data['password']
             # Authenticate
             user = authenticate(request, username=username, password=password)
-        else:
-            form = LoginForm()
-            return render(request, 'account/login.html', {'form': form, "failed": "block"})
+            if user is not None:
+                login(request, user)
+                return redirect("/account")
+        # There was an error
+        form = LoginForm()
+        return render(request, 'account/login.html', {'form': form, "failed": "block"})
     form = LoginForm()
     return render(request, 'account/login.html', {'form': form, "failed": "none"})
