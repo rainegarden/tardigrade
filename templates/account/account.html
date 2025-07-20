@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<img src="/account/pfp.png" width="200" height="200" style="border-radius: 50%;">
+    <p>Change Profile Picture</p>
+    <p style="color: red;">{{ error }}</p>
+    <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit">
+    </form>
+{% endblock %}
